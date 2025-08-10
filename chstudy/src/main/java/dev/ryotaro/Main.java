@@ -1,17 +1,42 @@
 package dev.ryotaro;
+import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.ClientIntelligence;
+import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
+import org.jboss.logging.Logger;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+    private static Logger LOGGER = Logger.getLogger(Main.class);
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+    public static void main(String[] args) {
+        // ./bin/cli.sh user create admin -p secret
+        var builder = new ConfigurationBuilder();
+//        builder.addServer()
+//                .host("127.0.0.1")
+//                .port(11222)
+//                .host("127.0.0.1").port(11322);
+
+        builder.addServer()
+                .host("127.0.0.1")
+                .port(11222)
+                .addServer()
+                .host("127.0.0.1")
+                .port(11322)
+                .security()
+                .authentication()
+                .saslMechanism("SCRAM-SHA-512")
+                .username("admin")
+                .password("secret");
+
+        // builder.uri("hotrod://admin:secret@localhost:11222");
+        //builder.uri("hotrod://admin:secret@localhost:11222");
+        // https://infinispan.org/docs/stable/titles/hotrod_java/hotrod_java.html#configuring-hotrod-java-clients_hotrod-client-configuration
+        builder.clientIntelligence(ClientIntelligence.BASIC);
+        try(RemoteCacheManager remoteCacheManager = new RemoteCacheManager(builder.build())) {
+            LOGGER.infof("remoteCacheManager: %s", remoteCacheManager);
+        var c = remoteCacheManager.getCache("myCache");
+         LOGGER.infof("a: %s", c.get("neko"));
         }
     }
 }
