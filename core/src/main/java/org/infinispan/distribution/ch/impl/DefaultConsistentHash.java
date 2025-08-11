@@ -54,6 +54,7 @@ public class DefaultConsistentHash extends AbstractConsistentHash {
 
    public static DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
                                               Map<Address, Float> capacityFactors, List<Address>[] segmentOwners) {
+      System.out.println("####### HIIIII");
       LOGGER.infof("DefaultConsistentHash: creating with %d owners, %d segments, members=%s, capacityFactors=%s, segmentOwners=%s",
             numOwners, numSegments, members, capacityFactors, Arrays.toString(segmentOwners));
 

@@ -54,6 +54,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
    @Override
    public DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
                                        Map<Address, Float> capacityFactors) {
+      System.out.println("####################  asdfasdfas");
       LOGGER.infof("SyncConsistentHashFactory creating consistent hash with %d owners, %d segments, members: %s, capacity factors: %s",
             numOwners, numSegments, members, capacityFactors);
 
@@ -134,6 +135,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
 
    @Override
    public DefaultConsistentHash rebalance(DefaultConsistentHash baseCH) {
+      LOGGER.infof("rebalance baseCH=%s", baseCH);
       DefaultConsistentHash rebalancedCH = create(baseCH.getNumOwners(), baseCH.getNumSegments(), baseCH.getMembers(),
             baseCH.getCapacityFactors());
 

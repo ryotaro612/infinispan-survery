@@ -79,6 +79,7 @@ import org.infinispan.util.logging.events.EventLogManager;
 import org.infinispan.util.logging.events.EventLogger;
 
 import net.jcip.annotations.GuardedBy;
+import org.jboss.logging.Logger;
 
 /**
  * The {@code LocalTopologyManager} implementation.
@@ -90,6 +91,7 @@ import net.jcip.annotations.GuardedBy;
 @Scope(Scopes.GLOBAL)
 public class LocalTopologyManagerImpl implements LocalTopologyManager, GlobalStateProvider {
    static final Log log = LogFactory.getLog(LocalTopologyManagerImpl.class);
+    static final Logger LOGGER = Logger.getLogger(LocalTopologyManagerImpl.class);
 
    @Inject Transport transport;
    @Inject

@@ -79,6 +79,7 @@ import org.infinispan.commons.util.EnumUtil;
 import org.infinispan.commons.util.IntSet;
 import org.infinispan.commons.util.IteratorMapper;
 import org.infinispan.commons.util.concurrent.CompletableFutures;
+import org.jboss.logging.Logger;
 import org.reactivestreams.FlowAdapters;
 import org.reactivestreams.Publisher;
 
@@ -95,6 +96,7 @@ import io.reactivex.rxjava3.core.Single;
 public class RemoteCacheImpl<K, V> extends RemoteCacheSupport<K, V> implements InternalRemoteCache<K, V> {
 
    private static final Log log = LogFactory.getLog(RemoteCacheImpl.class, Log.class);
+   private static final Logger LOGGER = Logger.getLogger(RemoteCacheImpl.class);
 
    protected final String name;
    protected final byte[] nameBytes;
@@ -343,6 +345,7 @@ public class RemoteCacheImpl<K, V> extends RemoteCacheSupport<K, V> implements I
 
    @Override
    public CompletableFuture<V> putAsync(K key, V value, long lifespan, TimeUnit lifespanUnit, long maxIdleTime, TimeUnit maxIdleTimeUnit) {
+      LOGGER.infof("### putAsync: %s", dispatcher.getClass());
       assertRemoteCacheManagerIsStarted();
       if (log.isTraceEnabled()) {
          log.tracef("About to add (K,V): (%s, %s) lifespan:%d, maxIdle:%d", key, value, lifespan, maxIdleTime);
