@@ -23,6 +23,7 @@ import org.infinispan.protostream.annotations.ProtoTypeId;
 import org.infinispan.remoting.transport.Address;
 
 import net.jcip.annotations.Immutable;
+import org.jboss.logging.Logger;
 
 /**
  * Default {@link ConsistentHash} implementation. This object is immutable.
@@ -36,6 +37,7 @@ import net.jcip.annotations.Immutable;
 @Immutable
 @ProtoTypeId(ProtoStreamTypeIds.DEFAULT_CONSISTENT_HASH)
 public class DefaultConsistentHash extends AbstractConsistentHash {
+   private static final Logger LOGGER = Logger.getLogger(DefaultConsistentHash.class);
    // State constants
    private static final String STATE_NUM_OWNERS = "numOwners";
    private static final String STATE_SEGMENT_OWNER = "segmentOwner.%d.%d";
@@ -52,6 +54,9 @@ public class DefaultConsistentHash extends AbstractConsistentHash {
 
    public static DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
                                               Map<Address, Float> capacityFactors, List<Address>[] segmentOwners) {
+      LOGGER.infof("DefaultConsistentHash: creating with %d owners, %d segments, members=%s, capacityFactors=%s, segmentOwners=%s",
+            numOwners, numSegments, members, capacityFactors, Arrays.toString(segmentOwners));
+
       if (numOwners < 1)
          throw new IllegalArgumentException("The number of owners must be strictly positive");
       if (numSegments < 1)

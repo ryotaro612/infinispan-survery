@@ -19,6 +19,7 @@ import org.infinispan.globalstate.ScopedPersistentState;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoTypeId;
 import org.infinispan.remoting.transport.Address;
+import org.jboss.logging.Logger;
 
 /**
  * {@link ConsistentHashFactory} implementation
@@ -39,6 +40,8 @@ import org.infinispan.remoting.transport.Address;
  */
 @ProtoTypeId(ProtoStreamTypeIds.SYNC_CONSISTENT_HASH)
 public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultConsistentHash> {
+   private static final Logger LOGGER = Logger.getLogger(SyncConsistentHashFactory.class);
+
    private static final SyncConsistentHashFactory INSTANCE = new SyncConsistentHashFactory();
 
    protected SyncConsistentHashFactory() { }
@@ -51,6 +54,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
    @Override
    public DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
                                        Map<Address, Float> capacityFactors) {
+      LOGGER.infof("SyncConsistentHashFactory creating consistent hash with %d owners, %d segments, members: %s, capacity factors: %s",
+            numOwners, numSegments, members, capacityFactors);
+
       checkCapacityFactors(members, capacityFactors);
 
       Builder builder = createBuilder(numOwners, numSegments, members, capacityFactors);
