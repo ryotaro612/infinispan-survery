@@ -1,8 +1,24 @@
-.PHONY: help package
+.PHONY: help package setup
 
 ##@ Build
 package: ## Build the Infinispan distribution.
 	./mvnw -B -Drelease-mode=upstream -Pdistribution -Pcommunity-release -DskipTests -Dinfinispan.brand.version=infinispan package
+
+install: ## Install
+    ./mvnw install -DskipTests=true
+
+setup: ## Setup the Infinispan server.
+	cd distribution/target/distribution && \
+	rm -rf infinispan-server-infinispan && \
+	unzip infinispan-server-infinispan.zip
+	cp chstudy/conf/infinispan.xml distribution/target/distribution/infinispan-server-infinispan/server/conf
+	cd distribution/target/distribution/infinispan-server-infinispan && \
+	cp -r server server2 && \
+	cp -r server server3 && \
+	./bin/cli.sh user create admin -p secret -g admin -s server && \
+	./bin/cli.sh user create admin -p secret -g admin -s server2 && \
+	./bin/cli.sh user create admin -p secret -g admin -s server3
+
 
 
 ##@ Help
