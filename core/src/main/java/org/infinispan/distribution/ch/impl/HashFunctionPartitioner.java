@@ -7,6 +7,7 @@ import org.infinispan.commons.hash.MurmurHash3;
 import org.infinispan.commons.util.Util;
 import org.infinispan.configuration.cache.HashConfiguration;
 import org.infinispan.distribution.ch.KeyPartitioner;
+import org.jboss.logging.Logger;
 
 /**
  * Key partitioner that computes a key's segment based on a hash function.
@@ -15,6 +16,7 @@ import org.infinispan.distribution.ch.KeyPartitioner;
  * @since 8.2
  */
 public class HashFunctionPartitioner implements KeyPartitioner {
+   private static Logger LOGGER = Logger.getLogger(HashFunctionPartitioner.class);
    protected Hash hashFunction;
    protected int numSegments;
    private int segmentSize;
@@ -67,6 +69,9 @@ public class HashFunctionPartitioner implements KeyPartitioner {
 
    @Override
    public int getSegment(Object key) {
+      // ノードのID (oookayama-7274)やkey valueのキーが渡される
+      LOGGER.infof("key: %s, numSegments=%d, segmentSize=%d", key, numSegments, segmentSize);
+      Thread.dumpStack();
       int hash = getHashForKey(key);
       return getSegmentForHash(hash);
    }

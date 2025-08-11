@@ -18,8 +18,10 @@ import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoTypeId;
 import org.infinispan.remoting.transport.NodeVersion;
 import org.infinispan.util.ByteString;
+import org.jboss.logging.Logger;
 
 /**
+ * CachePutの実装
  * Implements functionality defined by {@link org.infinispan.Cache#put(Object, Object)}
  *
  * <p>Note: Since 9.4, when the flag {@link org.infinispan.context.Flag#PUT_FOR_STATE_TRANSFER} is set,
@@ -31,7 +33,7 @@ import org.infinispan.util.ByteString;
  */
 @ProtoTypeId(ProtoStreamTypeIds.PUT_KEY_VALUE_COMMAND)
 public class PutKeyValueCommand extends AbstractDataWriteCommand implements MetadataAwareCommand {
-
+   private static Logger LOGGER = org.jboss.logging.Logger.getLogger(PutKeyValueCommand.class);
    private Object value;
    private boolean putIfAbsent;
    private boolean returnEntry;
@@ -101,6 +103,7 @@ public class PutKeyValueCommand extends AbstractDataWriteCommand implements Meta
    }
 
    public Object getValue() {
+      LOGGER.infof("getValue called for key: %s, value: %s", key, value);
       return value;
    }
 

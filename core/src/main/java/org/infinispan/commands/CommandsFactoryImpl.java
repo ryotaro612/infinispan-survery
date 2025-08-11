@@ -142,6 +142,7 @@ import org.infinispan.xsite.commands.remote.XSiteStateTransferControlRequest;
 import org.infinispan.xsite.irac.IracManagerKeyInfo;
 import org.infinispan.xsite.statetransfer.XSiteState;
 import org.infinispan.xsite.statetransfer.XSiteStatePushCommand;
+import org.jboss.logging.Logger;
 import org.reactivestreams.Publisher;
 
 /**
@@ -152,6 +153,7 @@ import org.reactivestreams.Publisher;
  */
 @Scope(Scopes.NAMED_CACHE)
 public class CommandsFactoryImpl implements CommandsFactory {
+   private static final Logger LOGGER = Logger.getLogger(CommandsFactoryImpl.class);
    @Inject ClusteringDependentLogic clusteringDependentLogic;
    @Inject Configuration configuration;
    @Inject ComponentRef<Cache<Object, Object>> cache;
@@ -174,6 +176,8 @@ public class CommandsFactoryImpl implements CommandsFactory {
    public PutKeyValueCommand buildPutKeyValueCommand(Object key, Object value, int segment, Metadata metadata,
                                                      long flagsBitSet, boolean returnEntry) {
       boolean reallyTransactional = transactional && !EnumUtil.containsAny(flagsBitSet, FlagBitSets.PUT_FOR_EXTERNAL_READ);
+      LOGGER.infof("buildPutKeyValueCommand: key=%s, value=%s, segment=%d, metadata=%s, flagsBitSet=%s, returnEntry=%b, reallyTransactional=%b",
+            key, value, segment, metadata, flagsBitSet, returnEntry, reallyTransactional);
       return new PutKeyValueCommand(cacheName, key, value, false, returnEntry, metadata, segment, flagsBitSet, generateUUID(reallyTransactional));
    }
 

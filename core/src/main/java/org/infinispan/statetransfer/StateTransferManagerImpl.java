@@ -46,6 +46,7 @@ import org.infinispan.topology.LocalTopologyManager;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.infinispan.xsite.irac.IracManager;
+import org.jboss.logging.Logger;
 
 /**
  * {@link StateTransferManager} implementation.
@@ -56,7 +57,7 @@ import org.infinispan.xsite.irac.IracManager;
 @MBean(objectName = "StateTransferManager", description = "Component that handles state transfer")
 @Scope(Scopes.NAMED_CACHE)
 public class StateTransferManagerImpl implements StateTransferManager {
-
+   private static final Logger LOGGER = Logger.getLogger(StateTransferManagerImpl.class);
    private static final Log log = LogFactory.getLog(StateTransferManagerImpl.class);
 
    @ComponentName(KnownComponentNames.CACHE_NAME)
@@ -152,6 +153,7 @@ public class StateTransferManagerImpl implements StateTransferManager {
    }
 
    private CompletionStage<Void> doTopologyUpdate(CacheTopology newCacheTopology, boolean isRebalance) {
+      LOGGER.infof("実際にデータを転送する？ doTopologyUpdate called for cache %s on node %s with new topology %s",  cacheName, rpcManager.getAddress(), newCacheTopology);
       CacheTopology oldCacheTopology = distributionManager.getCacheTopology();
 
       int newTopologyId = newCacheTopology.getTopologyId();

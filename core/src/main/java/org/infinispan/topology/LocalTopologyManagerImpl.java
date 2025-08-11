@@ -659,6 +659,7 @@ public class LocalTopologyManagerImpl implements LocalTopologyManager, GlobalSta
    @Override
    public CompletionStage<Void> handleRebalance(final String cacheName, final CacheTopology cacheTopology,
                                                 final int viewId, final Address sender) {
+      LOGGER.infof("handleRebalance: %s, cacheName: %s, viewId: %d, sender: %s", cacheTopology, cacheName, viewId, sender);
       if (!running) {
          log.debugf("Ignoring rebalance request %s for cache %s, the local cache manager is not running",
                     cacheTopology.getTopologyId(), cacheName);

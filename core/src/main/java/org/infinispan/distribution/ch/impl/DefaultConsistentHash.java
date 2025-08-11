@@ -49,6 +49,7 @@ public class DefaultConsistentHash extends AbstractConsistentHash {
 
    /**
     * The routing table.
+    * 2次元の要素はownerの数と等しそう
     */
    private final List<Address>[] segmentOwners;
 

@@ -1,0 +1,104 @@
+{
+  "definitions" : [ {
+    "protopath" : "generated:/:persistence.counters-api.proto",
+    "def" : {
+      "enums" : [ {
+        "name" : "CounterState",
+        "type_id" : 4000,
+        "enum_fields" : [ {
+          "name" : "VALID"
+        }, {
+          "name" : "LOWER_BOUND_REACHED",
+          "integer" : 1
+        }, {
+          "name" : "UPPER_BOUND_REACHED",
+          "integer" : 2
+        } ]
+      }, {
+        "name" : "Storage",
+        "type_id" : 4003,
+        "enum_fields" : [ {
+          "name" : "VOLATILE"
+        }, {
+          "name" : "PERSISTENT",
+          "integer" : 1
+        } ]
+      }, {
+        "name" : "CounterType",
+        "type_id" : 4002,
+        "enum_fields" : [ {
+          "name" : "UNBOUNDED_STRONG"
+        }, {
+          "name" : "BOUNDED_STRONG",
+          "integer" : 1
+        }, {
+          "name" : "WEAK",
+          "integer" : 2
+        } ]
+      } ],
+      "messages" : [ {
+        "name" : "CounterConfiguration",
+        "type_id" : 4001,
+        "fields" : [ {
+          "id" : 1,
+          "name" : "initialValue",
+          "type" : "int64",
+          "optional" : true,
+          "options" : [ {
+            "name" : "default",
+            "value" : "0"
+          } ]
+        }, {
+          "id" : 2,
+          "name" : "lowerBound",
+          "type" : "int64",
+          "optional" : true,
+          "options" : [ {
+            "name" : "default",
+            "value" : "0"
+          } ]
+        }, {
+          "id" : 3,
+          "name" : "upperBound",
+          "type" : "int64",
+          "optional" : true,
+          "options" : [ {
+            "name" : "default",
+            "value" : "0"
+          } ]
+        }, {
+          "id" : 4,
+          "name" : "concurrencyLevel",
+          "type" : "int32",
+          "optional" : true,
+          "options" : [ {
+            "name" : "default",
+            "value" : "0"
+          } ]
+        }, {
+          "id" : 5,
+          "name" : "type",
+          "type" : "CounterType",
+          "optional" : true
+        }, {
+          "id" : 6,
+          "name" : "storage",
+          "type" : "Storage",
+          "optional" : true
+        }, {
+          "id" : 7,
+          "name" : "lifespan",
+          "type" : "int64",
+          "optional" : true,
+          "options" : [ {
+            "name" : "default",
+            "value" : "0"
+          } ]
+        } ]
+      } ],
+      "package" : {
+        "name" : "org.infinispan.persistence.commons"
+      }
+    }
+  } ]
+}
