@@ -14,6 +14,7 @@ import org.infinispan.protostream.annotations.ProtoTypeId;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.remoting.transport.NodeVersion;
 import org.infinispan.topology.CacheTopology;
+import org.jboss.logging.Logger;
 
 /**
  * The coordinator is starting a rebalance operation.
@@ -23,6 +24,7 @@ import org.infinispan.topology.CacheTopology;
  */
 @ProtoTypeId(ProtoStreamTypeIds.REBALANCE_START_COMMAND)
 public class RebalanceStartCommand extends AbstractCacheControlCommand {
+   private static final Logger LOGGER = Logger.getLogger(RebalanceStartCommand.class);
 
    @ProtoField(1)
    final String cacheName;
@@ -80,6 +82,9 @@ public class RebalanceStartCommand extends AbstractCacheControlCommand {
 
    @Override
    public CompletionStage<?> invokeAsync(GlobalComponentRegistry gcr) throws Throwable {
+      System.out.print("invokeAysnc #####");
+      LOGGER.infof("Starting rebalance for cache '%s' with members %s, phase %s, topology id %d",
+            cacheName, actualMembers, phase, topologyId);
       CacheTopology topology = new CacheTopology(topologyId, rebalanceId, getCurrentCH(), getPendingCH(), phase, actualMembers, persistentUUIDs);
       return gcr.getLocalTopologyManager()
             .handleRebalance(cacheName, topology, viewId, origin);

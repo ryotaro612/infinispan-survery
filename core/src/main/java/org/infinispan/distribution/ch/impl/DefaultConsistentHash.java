@@ -54,9 +54,10 @@ public class DefaultConsistentHash extends AbstractConsistentHash {
 
    public static DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
                                               Map<Address, Float> capacityFactors, List<Address>[] segmentOwners) {
-      System.out.println("####### HIIIII");
-      LOGGER.infof("DefaultConsistentHash: creating with %d owners, %d segments, members=%s, capacityFactors=%s, segmentOwners=%s",
-            numOwners, numSegments, members, capacityFactors, Arrays.toString(segmentOwners));
+      LOGGER.infof("dumping Thread");
+      Thread.dumpStack();
+      LOGGER.infof("DefaultConsistentHash: creating with %d owners, %d segments, members=%s, capacityFactors=%s, segmentOwners=%s, numOfSegmentOwners: %d",
+            numOwners, numSegments, members, capacityFactors, Arrays.toString(segmentOwners), segmentOwners.length);
 
       if (numOwners < 1)
          throw new IllegalArgumentException("The number of owners must be strictly positive");

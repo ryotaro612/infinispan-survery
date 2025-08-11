@@ -48,6 +48,7 @@ import org.infinispan.util.logging.events.EventLogManager;
 import org.infinispan.util.logging.events.EventLogger;
 
 import net.jcip.annotations.GuardedBy;
+import org.jboss.logging.Logger;
 
 /**
  * Keeps track of a cache's status: members, current/pending consistent hashes, and rebalance status
@@ -56,6 +57,7 @@ import net.jcip.annotations.GuardedBy;
  * @since 5.2
  */
 public class ClusterCacheStatus implements AvailabilityStrategyContext {
+   private static final Logger LOGGER = org.jboss.logging.Logger.getLogger(ClusterCacheStatus.class);
    private final ReentrantLock lock = new ReentrantLock();
    // The HotRod client starts with topology 0, so we start with 1 to force an update
    public static final int INITIAL_TOPOLOGY_ID = 1;
@@ -525,6 +527,7 @@ public class ClusterCacheStatus implements AvailabilityStrategyContext {
    // TODO: newMembers isn't really used, pruneInvalidMembers uses expectedMembers
    @Override
    public void updateCurrentTopology(List<Address> newMembers) {
+      LOGGER.infof("updateCurrentTopology called for cache %s with members %s", cacheName, newMembers);
       acquireLock();
       try {
          // The current topology might be null just after a joiner became the coordinator
@@ -532,6 +535,7 @@ public class ClusterCacheStatus implements AvailabilityStrategyContext {
             createInitialCacheTopology();
          }
          var consistentHashFactory = getJoinInfo().getConsistentHashFactory();
+         LOGGER.infof("###  consistent ");
          int topologyId = currentTopology.getTopologyId();
          int rebalanceId = currentTopology.getRebalanceId();
          ConsistentHash currentCH = currentTopology.getCurrentCH();
@@ -940,6 +944,7 @@ public class ClusterCacheStatus implements AvailabilityStrategyContext {
    }
 
    public void startQueuedRebalance() {
+      LOGGER.infof("###  startQueuedRebalance called for cache ");
       acquireLock();
       try {
          // We cannot start rebalance until queued CR is complete
