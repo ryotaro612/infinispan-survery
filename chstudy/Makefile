@@ -1,9 +1,6 @@
-.PHONY: help package
-
-##@ Build
-package: ## Build the Infinispan distribution.
-	./mvnw -B -Drelease-mode=upstream -Pdistribution -Pcommunity-release -DskipTests -Dinfinispan.brand.version=infinispan package
-
+##@ Test
+test: ## Run tests.
+	go test ./...
 
 ##@ Help
 help: ## Display this help.
