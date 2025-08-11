@@ -281,20 +281,20 @@
                   </execution>
                </executions>
             </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-gpg-plugin</artifactId>
-               <version>${version.maven.gpg}</version>
-               <executions>
-                  <execution>
-                     <id>sign-artifacts</id>
-                     <phase>verify</phase>
-                     <goals>
-                        <goal>sign</goal>
-                     </goals>
-                  </execution>
-               </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--               <groupId>org.apache.maven.plugins</groupId>-->
+<!--               <artifactId>maven-gpg-plugin</artifactId>-->
+<!--               <version>${version.maven.gpg}</version>-->
+<!--               <executions>-->
+<!--                  <execution>-->
+<!--                     <id>sign-artifacts</id>-->
+<!--                     <phase>verify</phase>-->
+<!--                     <goals>-->
+<!--                        <goal>sign</goal>-->
+<!--                     </goals>-->
+<!--                  </execution>-->
+<!--               </executions>-->
+<!--            </plugin>-->
             <plugin>
                <groupId>io.github.git-commit-id</groupId>
                <artifactId>git-commit-id-maven-plugin</artifactId>
@@ -343,19 +343,19 @@
                      <detectOfflineLinks>false</detectOfflineLinks>
                   </configuration>
                </plugin>
-               <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-gpg-plugin</artifactId>
-                  <executions>
-                     <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                           <goal>sign</goal>
-                        </goals>
-                     </execution>
-                  </executions>
-               </plugin>
+<!--               <plugin>-->
+<!--                  <groupId>org.apache.maven.plugins</groupId>-->
+<!--                  <artifactId>maven-gpg-plugin</artifactId>-->
+<!--                  <executions>-->
+<!--                     <execution>-->
+<!--                        <id>sign-artifacts</id>-->
+<!--                        <phase>verify</phase>-->
+<!--                        <goals>-->
+<!--                           <goal>sign</goal>-->
+<!--                        </goals>-->
+<!--                     </execution>-->
+<!--                  </executions>-->
+<!--               </plugin>-->
                <plugin>
                   <groupId>org.sonatype.central</groupId>
                   <artifactId>central-publishing-maven-plugin</artifactId>
