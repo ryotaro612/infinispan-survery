@@ -23,6 +23,9 @@ public class Main {
                 .addServer()
                 .host("127.0.0.1")
                 .port(11322)
+                .addServer()
+                .host("127.0.0.1")
+                .port(11422)
                 .security()
                 .authentication()
                 .saslMechanism("SCRAM-SHA-512")
@@ -36,7 +39,8 @@ public class Main {
         try(RemoteCacheManager remoteCacheManager = new RemoteCacheManager(builder.build())) {
             LOGGER.infof("remoteCacheManager: %s", remoteCacheManager);
         var c = remoteCacheManager.getCache("myCache");
-         LOGGER.infof("a: %s", c.get("neko"));
+         c.put("neko", "nyan");
+         LOGGER.infof("a: %s", c.put("neko", "nyan"));
         }
     }
 }
