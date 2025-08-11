@@ -39,7 +39,7 @@ public class Main {
         try(RemoteCacheManager remoteCacheManager = new RemoteCacheManager(builder.build())) {
             LOGGER.infof("remoteCacheManager: %s", remoteCacheManager);
         var c = remoteCacheManager.getCache("myCache");
-         c.put("neko", "nyan");
+         c.put("foo", "bar");
          LOGGER.infof("a: %s", c.put("neko", "nyan"));
         }
     }
