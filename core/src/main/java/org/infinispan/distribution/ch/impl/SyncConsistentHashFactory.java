@@ -51,6 +51,18 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       return INSTANCE;
    }
 
+   /**
+    * ここからみましょう
+    * @param numOwners The ideal number of owners for each key. The created consistent hash
+    *                  can have more or less owners, but each key will have at least one owner.
+    * @param numSegments Number of hash-space segments. The implementation may round up the number
+    *                    of segments for performance, or may ignore the parameter altogether.
+    * @param members A list of addresses representing the new cache members.
+    * @param capacityFactors The capacity factor of each member. Determines the relative capacity of each node compared
+    *                        to the others. The implementation may ignore this parameter.
+    *                        If {@code null}, all the members are assumed to have a capacity factor of 1.
+    * @return
+    */
    @Override
    public DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
                                        Map<Address, Float> capacityFactors) {
@@ -337,6 +349,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          // Temporary priority queue for one segment's potential owners
          PriorityQueue<SegmentInfo> temporaryQueue = new PriorityQueue<>(numNodes);
 
+         // メソッドの深いところでsegment Ownerを設定している
          assignSegments(1, totalCapacity, 1, segmentQueues, temporaryQueue);
          assert stats.sumPrimaryOwned() == numSegments;
 
