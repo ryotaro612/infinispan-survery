@@ -166,6 +166,12 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
        * 各リストの長さは、node数とおなじ
        */
       final List<Address>[] segmentOwners;
+      /**
+       *
+       * 一次元はセグメント
+       * 二次元はノードの数
+       * 各セグメントのノード数を決める
+       */
       final int[][] ownerIndices;
 
       // Constant data
@@ -202,6 +208,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
        */
       final long[][] nodeHashes;
 
+      /**
+       * 代入だけで使われていない？
+       */
       int nodeDistanceUpdates;
       final OwnershipStatistics stats;
 
@@ -277,6 +286,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
 
       /**
        * 返る配列のサイズはノード数
+       * ノードごとに何個のセグメントに含められるか
        */
       int[] computeExpectedSegments(int expectedOwners, float totalCapacity, int iteration) {
          int[] expected = new int[numNodes];
@@ -469,6 +479,14 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return assigned;
       }
 
+      /**
+       *
+       * @param currentNumOwners segmentに配置したいownerの数?
+       * @param nodeSegmentsToAdd ノードごとに何個のセグメントに含められるか
+       * @param queueCount
+       * @param segmentQueues
+       * @param temporaryQueue
+       */
       private void populateQueues(int currentNumOwners, int[] nodeSegmentsToAdd, int queueCount,
                                   PriorityQueue<SegmentInfo>[] segmentQueues,
                                   PriorityQueue<SegmentInfo> temporaryQueue) {
@@ -508,6 +526,12 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          }
       }
 
+      /**
+       * currentNumOwnersの数がsegmentに既にいるownerよりも多い
+       * @param segment
+       * @param currentNumOwners
+       * @return
+       */
       private boolean segmentIsAvailable(int segment, int currentNumOwners) {
          return segmentOwners[segment].size() < currentNumOwners;
       }
@@ -515,6 +539,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       private long nodeSegmentDistance(int nodeIndex, long segmentHash) {
          nodeDistanceUpdates++;
          long[] currentNodeHashes = nodeHashes[nodeIndex];
+         // Arrays.binarySearchは、同じ値があるときだけ>=0を返す。
          int hashIndex = Arrays.binarySearch(currentNodeHashes, segmentHash);
          long scaledDistance;
          if (hashIndex > 0) {
@@ -545,6 +570,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
 //         System.out.printf("owners[%d][%d] = %s (%d)\n", segment, ownerPosition, sortedMembers.get(nodeIndex), nodeIndex);
       }
 
+      /**
+       * ノードがすでにsegmentに含まれていないか
+       */
       boolean nodeCanOwnSegment(int segment, int ownerPosition, int nodeIndex) {
          // Return false the node exists in the owners list
          return !intArrayContains(ownerIndices[segment], ownerPosition, nodeIndex);
