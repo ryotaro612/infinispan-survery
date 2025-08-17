@@ -53,15 +53,6 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
 
    /**
     * ここからみましょう
-    * @param numOwners The ideal number of owners for each key. The created consistent hash
-    *                  can have more or less owners, but each key will have at least one owner.
-    * @param numSegments Number of hash-space segments. The implementation may round up the number
-    *                    of segments for performance, or may ignore the parameter altogether.
-    * @param members A list of addresses representing the new cache members.
-    * @param capacityFactors The capacity factor of each member. Determines the relative capacity of each node compared
-    *                        to the others. The implementation may ignore this parameter.
-    *                        If {@code null}, all the members are assumed to have a capacity factor of 1.
-    * @return
     */
    @Override
    public DefaultConsistentHash create(int numOwners, int numSegments, List<Address> members,
@@ -170,20 +161,45 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       final int numSegments;
 
       // Output
+      /**
+       * Output
+       * 各リストの長さは、node数とおなじ
+       */
       final List<Address>[] segmentOwners;
       final int[][] ownerIndices;
 
       // Constant data
       final List<Address> sortedMembers;
+      /**
+       * memberの数
+       */
       final int numNodes;
+      /**
+       * 降順でcapacity
+       */
       final float[] sortedCapacityFactors;
       final float[] distanceFactors;
       final float totalCapacity;
+      /**
+       * ノードの数
+       */
       final int actualNumOwners;
+      /**
+       *たぶん num segmentの対数
+       * vertual nodeの数
+       */
       final int numNodeHashes;
-      // Hashes use only 63 bits, or the interval 0..2^63-1
+      /**
+       *
+       * Hashes use only 63 bits, or the interval 0..2^63-1
+       * 2^63-1をsegmentの数だけ割った値
+       */
       final long segmentSize;
       final long[] segmentHashes;
+      /**
+       * 1dim: ノードのインデックス
+       * 2dim: 各ノードのvirtual nodeごとのハッシュ値
+       */
       final long[][] nodeHashes;
 
       int nodeDistanceUpdates;
@@ -216,6 +232,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          stats = new OwnershipStatistics(sortedMembers);
       }
 
+      /**
+       * 先頭ほど小さい 1を超えない
+       */
       private float[] capacityFactorsToDistanceFactors() {
          // Nodes with capacity factor 0 have been removed
          float minCapacity = sortedCapacityFactors[numNodes - 1];
@@ -226,6 +245,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return distanceFactors;
       }
 
+      /**
+       * sortされたAddressnに対応する順にcapacity factorを並べる
+       */
       private float[] capacityFactorsToArray(List<Address> sortedMembers, Map<Address, Float> capacityFactors) {
          float[] capacityFactorsArray = new float[sortedMembers.size()];
          for (int n = 0; n < sortedMembers.size(); n++) {
@@ -234,6 +256,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return capacityFactorsArray;
       }
 
+      /**
+       * 降順に並べます
+       */
       private List<Address> sortMembersByCapacity(List<Address> members, Map<Address, Float> capacityFactors) {
          if (capacityFactors == null)
             return members;
@@ -250,6 +275,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return sortedMembers;
       }
 
+      /**
+       * 返る配列のサイズはノード数
+       */
       int[] computeExpectedSegments(int expectedOwners, float totalCapacity, int iteration) {
          int[] expected = new int[numNodes];
          float remainingCapacity = totalCapacity;
@@ -285,8 +313,12 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return Math.max((int) (idealOwnedSegments + (iteration - 2.5f ) * step), 0);
       }
 
+      /**
+       * 均等にしている。ハッシュを等間隔
+       */
       private long[] computeSegmentHashes(int numSegments) {
          assert segmentSize != 0;
+         //
          long[] segmentHashes = new long[numSegments];
          long currentSegmentHash = segmentSize >> 1;
          for (int s = 0; s < numSegments; s++) {
@@ -308,6 +340,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return nodeHashes;
       }
 
+      /**
+       * capacityの総和、sortedCapacityFactorがnullならメンバの数を返す
+       */
       float computeTotalCapacity() {
          if (sortedCapacityFactors == null)
             return sortedMembers.size();
@@ -322,6 +357,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       long nodeHash(Address address, int virtualNode) {
          // 64-bit hashes from 32-bit hashes have a non-negligible chance of collision,
          // so we try to get all 128 bits from UUID addresses
+         // 128bitにしている
          return MurmurHash3.MurmurHash3_x64_64(new long[] {address.getLeastSignificantBits(), address.getMostSignificantBits()}, virtualNode) & Long.MAX_VALUE;
       }
 
@@ -342,6 +378,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
 
       void populateOwners() {
          // List k contains each segment's kth closest available node
+         // 1dim: node 2dim: segment
          PriorityQueue<SegmentInfo>[] segmentQueues = new PriorityQueue[Math.max(1, actualNumOwners)];
          for (int i = 0; i < segmentQueues.length; i++) {
             segmentQueues[i] = new PriorityQueue<>(numSegments);
