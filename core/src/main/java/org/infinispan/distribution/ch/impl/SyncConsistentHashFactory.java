@@ -160,10 +160,12 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       final int numOwners;
       final int numSegments;
 
-      // Output
       /**
+       * <pre>
        * Output
+       * 1次元はsegment
        * 各リストの長さは、node数とおなじ
+       * </pre>
        */
       final List<Address>[] segmentOwners;
       /**
@@ -184,6 +186,11 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
        * 降順でcapacity
        */
       final float[] sortedCapacityFactors;
+      /**
+       * 昇順。
+       * 先頭ほど、小さい
+       * 1を超えない
+       */
       final float[] distanceFactors;
       final float totalCapacity;
       /**
@@ -242,7 +249,8 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       }
 
       /**
-       * 先頭ほど小さい 1を超えない
+       * 昇順
+       * 1を超えない
        */
       private float[] capacityFactorsToDistanceFactors() {
          // Nodes with capacity factor 0 have been removed
@@ -285,8 +293,10 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       }
 
       /**
+       * <pre>
        * 返る配列のサイズはノード数
        * ノードごとに何個のセグメントに含められるか
+       * </pre>
        */
       int[] computeExpectedSegments(int expectedOwners, float totalCapacity, int iteration) {
          int[] expected = new int[numNodes];
@@ -372,6 +382,8 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       }
 
       /**
+       * scale factorで桁溢れしないようにしている？
+       * この式だと、あまりに差が大きすぎると、逆に小さくなる？
        * @return distance between 2 points in the 0..2^63-1 range, max 2^62-1
        */
       long distance(long a, long b) {
@@ -389,6 +401,8 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       void populateOwners() {
          // List k contains each segment's kth closest available node
          // 1dim: node 2dim: segment
+         // segmentQueuesの長さはノード数
+         //
          PriorityQueue<SegmentInfo>[] segmentQueues = new PriorityQueue[Math.max(1, actualNumOwners)];
          for (int i = 0; i < segmentQueues.length; i++) {
             segmentQueues[i] = new PriorityQueue<>(numSegments);
@@ -407,6 +421,13 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          assert stats.sumOwned() == actualNumOwners * numSegments;
       }
 
+      /**
+       * @param currentNumOwners
+       * @param totalCapacity
+       * @param queuesCount
+       * @param segmentQueues
+       * @param temporaryQueue
+       */
       private void assignSegments(int currentNumOwners, float totalCapacity, int queuesCount,
                                   PriorityQueue<SegmentInfo>[] segmentQueues,
                                   PriorityQueue<SegmentInfo> temporaryQueue) {
@@ -455,6 +476,15 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return nodeSegmentsAvailable;
       }
 
+      /**
+       *
+       * @param currentNumOwners
+       * @param nodeSegmentsToAdd
+       * @param queuesCount
+       * @param iterationCopies
+       * @param segmentQueues
+       * @return
+       */
       private boolean assignQueuedOwners(int currentNumOwners, int[] nodeSegmentsToAdd, int queuesCount,
                                          int iterationCopies, PriorityQueue<SegmentInfo>[] segmentQueues) {
          boolean assigned = false;
@@ -484,8 +514,8 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
        * @param currentNumOwners segmentに配置したいownerの数?
        * @param nodeSegmentsToAdd ノードごとに何個のセグメントに含められるか
        * @param queueCount
-       * @param segmentQueues
-       * @param temporaryQueue
+       * @param segmentQueues segmentQueuesの長さはノード数
+       * @param temporaryQueue このメソッドの補助に使われるだけ
        */
       private void populateQueues(int currentNumOwners, int[] nodeSegmentsToAdd, int queueCount,
                                   PriorityQueue<SegmentInfo>[] segmentQueues,
@@ -536,6 +566,10 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return segmentOwners[segment].size() < currentNumOwners;
       }
 
+      /**
+       * capacityでスケールした距離を返す。
+       * capacityが大きいほと近いとみなされる
+       */
       private long nodeSegmentDistance(int nodeIndex, long segmentHash) {
          nodeDistanceUpdates++;
          long[] currentNodeHashes = nodeHashes[nodeIndex];
@@ -599,6 +633,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
             this.distance = distance;
          }
 
+         /**
+          * コンストラクタに渡したnodeIndexとdistanceを上書きする
+          */
          void update(int closestNode, long minDistance) {
             this.nodeIndex = closestNode;
             this.distance = minDistance;
