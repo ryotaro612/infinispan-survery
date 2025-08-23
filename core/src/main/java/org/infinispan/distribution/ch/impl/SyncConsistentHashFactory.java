@@ -479,7 +479,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       /**
        *
        * @param currentNumOwners
-       * @param nodeSegmentsToAdd
+       * @param nodeSegmentsToAdd  nodeSegmentsToAdd[i] node iを含めるsegmentの数
        * @param queuesCount
        * @param iterationCopies
        * @param segmentQueues
@@ -510,7 +510,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       }
 
       /**
-       *
+       * segmentQueuesにつめる
        * @param currentNumOwners segmentに配置したいownerの数?
        * @param nodeSegmentsToAdd ノードごとに何個のセグメントに含められるか
        * @param queueCount

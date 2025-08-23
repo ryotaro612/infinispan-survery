@@ -2,6 +2,8 @@ package dev.ryotaro;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
+import org.infinispan.manager.DefaultCacheManager;
 import org.jboss.logging.Logger;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -10,6 +12,10 @@ public class Main {
     private static Logger LOGGER = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
+        // ノードを作る jgroupでクラスタを構成する
+        // GlobalConfigurationBuilder.defaultClusteredBuilder().transport().jgroups();
+        new DefaultCacheManager();
+
         // ./bin/cli.sh user create admin -p secret
         var builder = new ConfigurationBuilder();
 //        builder.addServer()
