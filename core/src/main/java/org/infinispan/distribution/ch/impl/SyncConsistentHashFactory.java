@@ -59,7 +59,7 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
                                        Map<Address, Float> capacityFactors) {
       LOGGER.infof("SyncConsistentHashFactory creating consistent hash with %d owners, %d segments, members: %s, capacity factors: %s",
             numOwners, numSegments, members, capacityFactors);
-
+      // 引数をチェックしているだけ
       checkCapacityFactors(members, capacityFactors);
 
       Builder builder = createBuilder(numOwners, numSegments, members, capacityFactors);
@@ -80,6 +80,9 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       return new Builder(numOwners, numSegments, members, capacityFactors);
    }
 
+   /**
+    * 引数をチェックしているだけ
+    */
    void checkCapacityFactors(List<Address> members, Map<Address, Float> capacityFactors) {
       if (capacityFactors != null) {
          float totalCapacity = 0;
@@ -192,20 +195,29 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
        * 1を超えない
        */
       final float[] distanceFactors;
+      /**
+       * <pre>
+       *     基本、capacityの総和
+       * </pre>
+       */
       final float totalCapacity;
       /**
        * ノードの数
        */
       final int actualNumOwners;
       /**
+       * <pre>
        *たぶん num segmentの対数
        * vertual nodeの数
+       * </pre>
        */
       final int numNodeHashes;
       /**
-       *
+       * <pre>
+       * セグメントのハッシュ値の間隔
        * Hashes use only 63 bits, or the interval 0..2^63-1
        * 2^63-1をsegmentの数だけ割った値
+       * </pre>
        */
       final long segmentSize;
       final long[] segmentHashes;
@@ -348,6 +360,10 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          return segmentHashes;
       }
 
+      /**
+       *
+       * @return
+       */
       private long[][] computeNodeHashes() {
          long[][] nodeHashes = new long[numNodes][];
          for (int n = 0; n < numNodes; n++) {
@@ -378,6 +394,8 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
          // 64-bit hashes from 32-bit hashes have a non-negligible chance of collision,
          // so we try to get all 128 bits from UUID addresses
          // 128bitにしている
+         // addressのuuidを64ビットずつにわけてあたえる。virtualノードのインデックスをseed
+         //
          return MurmurHash3.MurmurHash3_x64_64(new long[] {address.getLeastSignificantBits(), address.getMostSignificantBits()}, virtualNode) & Long.MAX_VALUE;
       }
 
@@ -567,8 +585,11 @@ public class SyncConsistentHashFactory implements ConsistentHashFactory<DefaultC
       }
 
       /**
+       * <pre>
        * capacityでスケールした距離を返す。
        * capacityが大きいほと近いとみなされる
+       * virutal nodeの中で最も近い?
+       * </pre>
        */
       private long nodeSegmentDistance(int nodeIndex, long segmentHash) {
          nodeDistanceUpdates++;

@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         // ノードを作る jgroupでクラスタを構成する
-        // GlobalConfigurationBuilder.defaultClusteredBuilder().transport().jgroups();
+        // // GlobalConfigurationBuilder.defaultClusteredBuilder().transport().jgroups();
         new DefaultCacheManager();
 
         // ./bin/cli.sh user create admin -p secret
